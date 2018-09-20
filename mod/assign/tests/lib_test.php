@@ -362,14 +362,23 @@ class mod_assign_lib_testcase extends advanced_testcase {
             ]);
 
         $instance = $assign->get_instance();
-        $eventparams = ['modulename' => 'assign', 'instance' => $instance->id];
+        $eventparams = [
+            'modulename' => 'assign',
+            'instance' => $instance->id,
+            'eventtype' => ASSIGN_EVENT_TYPE_DUE,
+            'groupid' => 0
+        ];
 
         // Make sure the calendar event for assignment 1 matches the initial due date.
         $eventtime = $DB->get_field('event', 'timestart', $eventparams, MUST_EXIST);
         $this->assertEquals($eventtime, $duedate);
 
         // Manually update assignment 1's due date.
-        $DB->update_record('assign', (object) ['id' => $instance->id, 'duedate' => $newduedate]);
+        $DB->update_record('assign', (object) [
+            'id' => $instance->id,
+            'duedate' => $newduedate,
+            'course' => $course->id
+        ]);
 
         // Then refresh the assignment events of assignment 1's course.
         $this->assertTrue(assign_refresh_events($course->id));
@@ -380,15 +389,25 @@ class mod_assign_lib_testcase extends advanced_testcase {
 
         // Create a second course and assignment.
         $othercourse = $this->getDataGenerator()->create_course();;
-        $otherassign = $this->create_instance($othercourse, ['duedate' => $duedate, 'course' => $othercourse->id]);
+        $otherassign = $this->create_instance($othercourse, [
+            'duedate' => $duedate,
+        ]);
         $otherinstance = $otherassign->get_instance();
 
         // Manually update assignment 1 and 2's due dates.
         $newduedate += DAYSECS;
-        $DB->update_record('assign', (object)['id' => $instance->id, 'duedate' => $newduedate]);
-        $DB->update_record('assign', (object)['id' => $otherinstance->id, 'duedate' => $newduedate]);
+        $DB->update_record('assign', (object)[
+            'id' => $instance->id,
+            'duedate' => $newduedate,
+            'course' => $course->id
+        ]);
+        $DB->update_record('assign', (object)[
+            'id' => $otherinstance->id,
+            'duedate' => $newduedate,
+            'course' => $othercourse->id
+        ]);
 
-        // Refresh events of all courses.
+        // Refresh events of all courses and check the calendar events matches the new date.
         $this->assertTrue(assign_refresh_events());
 
         // Check the due date calendar event for assignment 1.
@@ -1452,5 +1471,30 @@ class mod_assign_lib_testcase extends advanced_testcase {
         // Confirm that a module updated event is fired when the module
         // is changed.
         $this->assertNotEmpty($moduleupdatedevents);
+    }
+
+    /**
+     * A user who does not have capabilities to add events to the calendar should be able to create an assignment.
+     */
+    public function test_creation_with_no_calendar_capabilities() {
+        $this->resetAfterTest();
+        $course = self::getDataGenerator()->create_course();
+        $context = context_course::instance($course->id);
+        $user = self::getDataGenerator()->create_and_enrol($course, 'editingteacher');
+        $roleid = self::getDataGenerator()->create_role();
+        self::getDataGenerator()->role_assign($roleid, $user->id, $context->id);
+        assign_capability('moodle/calendar:manageentries', CAP_PROHIBIT, $roleid, $context, true);
+        $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
+        // Create an instance as a user without the calendar capabilities.
+        $this->setUser($user);
+        $time = time();
+        $params = array(
+            'course' => $course->id,
+            'allowsubmissionsfromdate' => $time,
+            'duedate' => $time + 500,
+            'cutoffdate' => $time + 600,
+            'gradingduedate' => $time + 700,
+        );
+        $generator->create_instance($params);
     }
 }

@@ -258,8 +258,11 @@ function assign_update_events($assign, $override = null) {
         // Only load events for this override.
         if (isset($override->userid)) {
             $conds['userid'] = $override->userid;
-        } else {
+        } else if (isset($override->groupid)) {
             $conds['groupid'] = $override->groupid;
+        } else {
+            // This is not a valid override, it may have been left from a bad import or restore.
+            $conds['groupid'] = $conds['userid'] = 0;
         }
     }
     $oldevents = $DB->get_records('event', $conds, 'id ASC');
@@ -342,7 +345,7 @@ function assign_update_events($assign, $override = null) {
                 unset($event->id);
             }
             $event->name      = $eventname.' ('.get_string('duedate', 'assign').')';
-            calendar_event::create($event);
+            calendar_event::create($event, false);
         }
     }
 
