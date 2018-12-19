@@ -77,6 +77,15 @@ function eguru_marketingspot() {
     }
 
     for ($i = 1; $i <= 4; $i++) {
+	$url='';
+    switch($i){
+	case 4:
+		$url = 'https://login.myownmeeting.com/conference,85007672';
+		break;
+	default:
+		$url = '';
+    }
+
         $mspicon = theme_eguru_get_setting('mspot'.$i.'icon');
         $msptitle = theme_eguru_get_setting('mspot'.$i.'title');
         $msptitle = theme_eguru_lang($msptitle);
@@ -88,24 +97,45 @@ function eguru_marketingspot() {
 
                 $content .= html_writer::start_tag('div', array('class' => 'ebox'));
             if (!empty($mspicon)) {
+
                 $content .= html_writer::start_tag('div', array('class' => 'ebox-head'));
+		if($i == 4){
+		    $content .= html_writer::start_tag('a', array('href' => $url));
+		}
 
                     $content .= html_writer::start_tag('div', array('class' => 'rcthumb'));
                         $content .= html_writer::start_tag('i', array('class' => 'fa fa-'.$mspicon));
                         $content .= html_writer::end_tag('i');
                     $content .= html_writer::end_tag('div');
+		if($i == 4){
+		    $content .= html_writer::end_tag('a');
+		}
+
                 $content .= html_writer::end_tag('div');
+
             }
             if (!empty($msptitle) || !empty($mspdescription)) {
                 $content .= html_writer::start_tag('div', array('class' => 'ebox-body'));
-
+		if($i == 4){
+		    $content .= html_writer::start_tag('a', array('href' => $url));
+		}
                     $content .= html_writer::start_tag('h6');
                     $content .= $msptitle;
                     $content .= html_writer::end_tag('h6');
+		if($i == 4){
+		    $content .= html_writer::end_tag('a');
+		}
 
+		if($i == 4){
+		    $content .= html_writer::start_tag('a', array('href' => $url));
+		}
                     $content .= html_writer::start_tag('p');
                     $content .= $mspdescription;
                     $content .= html_writer::end_tag('p');
+		if($i == 4){
+		    $content .= html_writer::end_tag('a');
+		}
+
 
                 $content .= html_writer::end_tag('div');
             }

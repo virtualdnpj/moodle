@@ -64,7 +64,7 @@ function slideshow() {
             }
 
             $content .= html_writer::start_tag('div', array('
-                class' => 'carousel-item'.$clstxt2, 'style' => 'background-image: url('.$slideimg));
+                class' => 'carousel-item'.$clstxt2, 'style' => 'background-image: url('.$slideimg.'); background-size: 100% 100%;')); 
 
             $content .= html_writer::start_tag('div', array('class' => 'carousel-overlay-content container-fluid'));
             if ($slidecaption != '' || $slidebtn != '') {
@@ -109,7 +109,7 @@ function slideshow() {
     ?>
 <style type="text/css">
     .theme-slider, #home-page-carousel .carousel-item {
-      height:550px;
+      height:445px;
     }
 
 .carousel-item-next.carousel-item-left,

@@ -95,8 +95,8 @@ body {
     max-width: 1240px;
 }
 .navbar-light .container {
-    padding-left: 15px;
-    padding-right: 15px;
+    /*padding-left: 15px;
+    padding-right: 15px;*/
 }
 h1 {
     font-weight: normal;
@@ -1236,7 +1236,7 @@ img {
     margin: 10px 0;
     a.navbar-brand {
         display: block;
-        max-width: 250px;
+        /*max-width: 250px;*/
         padding: 0;
         margin: 0;
         &:hover {
@@ -1954,7 +1954,7 @@ img {
         }
     }
     .homepage-carousel .carousel-inner > .carousel-item {
-        min-height: 493px;
+        /*min-height: 493px;*/
         .item-inner-wrap {
             min-height: 493px;
             position: relative;
